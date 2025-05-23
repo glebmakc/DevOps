@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Проверка безопасности игрового приложения</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 0 15px;
+            background: #f7f9fc;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+            color: #34495e;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #2980b9;
+            border: none;
+            color: white;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #3498db;
+        }
+        pre {
+            background: #ecf0f1;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 25px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Проверка безопасности игрового приложения</h1>
+    <form id="loginForm">
+        <label for="ip">IP-адрес</label>
+        <input type="text" id="ip" name="ip" placeholder="192.168.1.100" required />
+
+        <label for="is_new_device">Новое устройство</label>
+        <select id="is_new_device" name="is_new_device" required>
+            <option value="false" selected>Нет</option>
+            <option value="true">Да</option>
+        </select>
+
+        <button type="submit">Отправить запрос</button>
+    </form>
+
+    <pre id="responseOutput" aria-live="polite" aria-atomic="true"></pre>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        const output = document.getElementById('responseOutput');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const ip = form.ip.value.trim();
+            const is_new_device = form.is_new_device.value === 'true';
+            const device = "PC";  // фиксируем устройство как "PC"
+
+            output.textContent = 'Отправка запроса...';
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ip, device, is_new_device })
+                });
+
+                if (!response.ok) {
+                    output.textContent = `Ошибка сервера: ${response.status} ${response.statusText}`;
+                    return;
+                }
+
+                const data = await response.json();
+                output.textContent = JSON.stringify(data, null, 4);
+            } catch (error) {
+                output.textContent = 'Ошибка запроса: ' + error.message;
+            }
+        });
+    </script>
+</body>
+</html>
