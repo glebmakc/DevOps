@@ -1,3 +1,6 @@
 fastapi
-uvicorn
+uvicorn[standard]
+databases[postgresql]
+asyncpg
+psycopg2-binary
 pydantic
